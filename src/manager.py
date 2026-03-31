@@ -24,15 +24,43 @@ class Manager:
                 return False
         return True
     
-    def get_apartment_costs(self, apartment_key, month, year) -> float:
+    def get_apartment_costs(self, apartment_key, year=None, month=None):
         
         if apartment_key not in self.apartments:
             return None
         
         total = 0.00
         
+        if(month == None and year == None):
+            for bill in self.bills:
+                if(bill.apartment == apartment_key):
+                    total += bill.amount_pln
+            
+            return total
+        
+        if(month == None):
+            for bill in self.bills:
+                if(bill.apartment == apartment_key and bill.settlement_year == year):
+                    total += bill.amount_pln
+            
+            return total
+        
         for bill in self.bills:
-            if (bill.apartment == bill and bill.settlement_year == year and bill.settlement_month == month):
+            if(bill.apartment == apartment_key and bill.settlement_month == month and bill.settlement_year == year):
                 total += bill.amount_pln
         
-        return total
+        return total        
+        
+    def get_apartment_settlement(self, apartment_key, year, month):
+        if apartment_key not in self.apartments:
+            return None
+        
+        total_rent = 0.00
+        total_bills = 0.00
+        
+        for bill in self.bills:
+            if(bill.apartment == apartment_key and bill.settlement_month == month and bill.settlement_year == year):
+                total_bills += bill.amount_pln
+                
+            
+        total_due = total_rent - total_bills
